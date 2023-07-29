@@ -38,7 +38,10 @@ module Elasticsearch
         #
         def method_missing(name, *args, &block)
           klass = Utils.__camelize(name)
-          if Filters.const_defined? klass
+          if Queries.const_defined? klass
+            @value = Queries.const_get(klass).new *args, &block
+          # ??? after elastic 1.X all these Filter classes are obsolete - gem needs an update
+          elsif Filters.const_defined? klass
             @value = Filters.const_get(klass).new *args, &block
           elsif @block
             @block.binding.eval('self').send(name, *args, &block)
